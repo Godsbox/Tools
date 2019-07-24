@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="progressbutton">
+        <attr name="progressColor" format="color" />
+        <attr name="progressBgColor" format="color" />
+        <attr name="buttonNormalColor" format="color" />
+        <attr name="buttonPressedColor" format="color" />
+        <attr name="buttonCornerRadius" format="dimension" />
+        <attr name="showProgressNum" format="boolean" />
+        <attr name="progress" format="float" />
+        <attr name="mProgressDrawable" format="reference|integer" />
+        <attr name="mProgressDrawableBg" format="reference|color" />
+    </declare-styleable>
+
+    <!-- 发光字体StrokeTextView -->
+    <declare-styleable name="StrokeTextView">
+        <!-- 自定义的属性名称 和对应的单位 -->
+        <attr name="outerColor" format="color|reference" />
+        <attr name="innerColor" format="color|reference" />
+    </declare-styleable>
+
+    <declare-styleable name="MarqueeViewStyle">
+        <attr name="mvInterval" format="integer|reference" />
+        <attr name="mvAnimDuration" format="integer|reference" />
+        <attr name="mvTextSize" format="dimension|reference" />
+        <attr name="mvTextColor" format="color|reference" />
+        <attr name="mvSingleLine" format="boolean" />
+        <attr name="mvGravity">
+            <enum name="left" value="0" />
+            <enum name="center" value="1" />
+            <enum name="right" value="2" />
+        </attr>
+        <attr name="mvDirection">
+            <enum name="bottom_to_top" value="0" />
+            <enum name="top_to_bottom" value="1" />
+            <enum name="right_to_left" value="2" />
+            <enum name="left_to_right" value="3" />
+        </attr>
+    </declare-styleable>
+    <declare-styleable name="MenuView">
+        <attr name="menu_name" format="string" />
+        <attr name="menu_nameColor" format="color" />
+        <attr name="menu_nameSize" format="float" />
+        <attr name="menu_hint" format="string" />
+        <attr name="menu_hintColor" format="color" />
+        <attr name="menu_hintSize" format="float" />
+        <attr name="menu_icon" format="color|reference" />
+        <attr name="menu_isShowArrow" format="boolean" />
+        <attr name="menu_isShowIcon" format="boolean" />
+        <attr name="menu_isShowHint" format="boolean" />
+    </declare-styleable>
+
+    <declare-styleable name="AvatarView">
+        <attr name="av_avatarSize" format="dimension|reference" />
+        <attr name="av_flagSize" format="dimension|reference" />
+        <attr name="av_frameSize" format="dimension|reference" />
+        <attr name="av_avatarBorderColor" format="color|reference" />
+        <attr name="av_avatarBorderWidth" format="dimension|reference" />
+    </declare-styleable>
+</resources>

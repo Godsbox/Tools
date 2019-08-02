@@ -14,7 +14,7 @@ import com.wsy.tool.R;
 import java.lang.reflect.Field;
 
 /**
- * 发光字体.
+ * 描边字体.
  */
 public class StrokeTextView extends AppCompatTextView {
 

@@ -8,14 +8,24 @@ import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Resources;
 import android.os.Build;
+import android.os.Environment;
 import android.provider.Settings;
 import android.support.v4.content.ContextCompat;
 import android.telephony.TelephonyManager;
 import android.text.TextUtils;
+import android.util.Log;
 import android.util.TypedValue;
 
 import com.gyf.barlibrary.OSUtils;
 
+import java.io.BufferedReader;
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.util.UUID;
 
 import static android.Manifest.permission.READ_PHONE_STATE;
@@ -32,6 +42,9 @@ import static com.wsy.tool.util.ContextUtils.getSystemService;
  */
 public final class DeviceUtils {
 
+    private final String TAG = getClass().getSimpleName();
+
+    private String deviceId;
     /**
      * 私有构造器。
      */
@@ -72,7 +85,7 @@ public final class DeviceUtils {
         } catch (Exception exception) {
             serial = "serial";
         }
-        String deviceId = getDeviceId();
+        String deviceId = getAndroidDeviceId();
         String least = deviceId + serial;
 
         // Thanks @Joe!
@@ -88,7 +101,7 @@ public final class DeviceUtils {
      *
      * @return 设备 ID
      */
-    public static String getDeviceId() {
+    public static String getAndroidDeviceId() {
         int flag = ContextCompat.checkSelfPermission(getAppContext(), READ_PHONE_STATE);
         if (flag == PERMISSION_GRANTED) {
             TelephonyManager manager = getSystemService(TELEPHONY_SERVICE);
@@ -185,6 +198,114 @@ public final class DeviceUtils {
         return false;
     }
 
+    public String getDeviceId() {
+        if (!TextUtils.isEmpty(deviceId)) {
+            return deviceId;
+        }
+        deviceId = getAndroidDeviceId();
+        String KEY_DEVICE_ID = "ANDROID_DEVICE_ID";
+        if (!TextUtils.isEmpty(deviceId)) {
+            SPUtils.putString(KEY_DEVICE_ID, deviceId);
+            return deviceId;
+        }
+        deviceId = SPUtils.getString(KEY_DEVICE_ID);
+        if (!TextUtils.isEmpty(deviceId)) {
+            String id = getDeviceIdFromExternalStorage();
+            if (TextUtils.isEmpty(id) || !deviceId.equals(id)) {
+                save2ExternalStorage(deviceId);
+            }
+            return deviceId;
+        } else {
+            deviceId = getDeviceIdFromExternalStorage();
+            if (!TextUtils.isEmpty(deviceId)) {
+                SPUtils.putString(KEY_DEVICE_ID, deviceId);
+                return deviceId;
+            }
+        }
+        deviceId = getUUID();
+        if (!TextUtils.isEmpty(deviceId)) {
+            //新生成的id要保存起来
+            save2ExternalStorage(deviceId);
+            SPUtils.putString(KEY_DEVICE_ID, deviceId);
+        }
+        return deviceId;
+    }
+
+    /**
+     * 从外部存储的公共目录上读取
+     */
+    private String getDeviceIdFromExternalStorage() {
+        String filePath = getDeviceIdFilePath();
+        File file = new File(filePath);
+        BufferedReader reader = null;
+        StringBuilder sb = new StringBuilder();
+        try {
+            reader = new BufferedReader(new FileReader(file));
+            String tempString = null;
+            while ((tempString = reader.readLine()) != null) {
+                sb.append(tempString);
+            }
+            reader.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (Exception e1) {
+
+                }
+            }
+            return sb.toString();
+        }
+    }
+
+    /**
+     * 获取外部存在的完整文件路径
+     */
+    private String getDeviceIdFilePath() {
+        String dirPath;
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.KITKAT) {
+            dirPath = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOCUMENTS).getPath() + File.separator;
+        } else {
+            dirPath = Environment.getExternalStorageDirectory().getPath() + File.separator + "Documents" + File.separator;
+        }
+        File file = new File(dirPath + ".DEVICE_ID.txt");
+        if (!file.exists()) {
+            try {
+                file.createNewFile();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        Log.i(TAG, "设备id文件路径:" + file.getPath());
+        return file.getPath();
+    }
+
+    private void save2ExternalStorage(String content) {
+        String filePath = getDeviceIdFilePath();
+        BufferedWriter writer = null;
+        try {
+            File f = new File(filePath);
+            OutputStreamWriter write = new OutputStreamWriter(new FileOutputStream(f, false), "UTF-8");
+            writer = new BufferedWriter(write);
+            writer.write(content);
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (writer != null) {
+                try {
+                    writer.flush();
+                    writer.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+    }
+
     /**
      * 获取metaData
      */
@@ -207,5 +328,9 @@ public final class DeviceUtils {
      */
     public static String getChannel(Context context) {
         return getMetaData(context, "UMENG_CHANNEL");
+    }
+
+    private String getUUID() {
+        return UUID.randomUUID().toString().replace("-", "");
     }
 }

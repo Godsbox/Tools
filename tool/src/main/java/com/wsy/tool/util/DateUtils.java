@@ -25,7 +25,7 @@ public class DateUtils
     }
 
     /**
-     * 获得默认的 date pattern
+     * 获得默认的 date pattern你
      */
     public static String getDatePatternSimple()
     {

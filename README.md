@@ -57,4 +57,16 @@ DisplayUtils 显示屏工具
 
 DateUtils 日期工具
 
-DeviceUtils 获取设备信息工具
+BaseConstant 基础常亮
+
+CenterDrawableTextView 居中混合文本视图
+
+CountTextView 文本长度计数文本
+
+EmojiFilteredEditText 过滤表情输入框
+
+EnableViewPager 可配置是否可以翻页
+
+OnSwipeListener 滑动手势监听器
+
+SimpleTextWatcher 文本变化监听器
